@@ -26,11 +26,18 @@ daily_means<-aggregate(data[, 1], list(data$date), mean)
 names(daily_means)<-c("Date","Average")
 print(daily_means)
 
+#mean all
+all_mean<-mean(data[, 1],na.rm=TRUE)
+print(all_mean)
+
 #Median by day
 daily_median<-aggregate(data[, 1], list(data$date), median)
 names(daily_median)<-c("Date","Median")
 print(daily_median)
 
+#median all
+all_median<-median(data[, 1],na.rm=TRUE)
+print(all_median)
 
 
 #What is the average daily activity pattern?
@@ -96,10 +103,19 @@ daily_means_rm<-aggregate(rm_data[, 1], list(rm_data$date), mean)
 names(daily_means_rm)<-c("Date","Average wo/Missing Values")
 print(daily_means_rm)
 
+#all_rm
+all_mean_rm<-mean(rm_data[, 1],na.rm=TRUE)
+print(all_mean_rm)
+
 #Median by day (no missing values)
 daily_median_rm<-aggregate(rm_data[, 1], list(rm_data$date), median)
 names(daily_median_rm)<-c("Date","Median wo/Missing Values")
 print(daily_median_rm)
+
+#all_median_rm
+all_median_rm<-median(rm_data[, 1],na.rm=TRUE)
+print(all_median_rm)
+
 
 #Compare with missing and wo/missing
 
@@ -117,3 +133,20 @@ sum(rm_data$steps,na.rm =TRUE)
 
 
 #Are there differences in activity patterns between weekdays and weekends?
+
+#Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day
+rm_data$weekend_flag<-factor(ifelse(weekdays(rm_data$date,abbreviate = TRUE) %in% c("Sun","Sat"),"Weekend","Weekday"))
+
+library(lattice)
+
+weekend_flag_means<-aggregate(rm_data[, 1], list(rm_data$weekend_flag,rm_data$interval), mean)
+names(weekend_flag_means)<-c("weekend_flag","interval","steps")
+
+xyplot(steps~interval|weekend_flag,data=weekend_flag_means,layout=c(1,2),type="l",
+       ylab="Number of steps",
+       xlab="Interval")
+
+
+
+
+

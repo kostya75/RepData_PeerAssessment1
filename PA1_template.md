@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 unzip("activity.zip", "activity.csv")
 data <- read.table("activity.csv", sep=",", header=T,stringsAsFactors = FALSE)
 
@@ -20,24 +16,37 @@ data$date<-as.Date(data$date,format="%Y-%m-%d")
 
 
 ###Make a histogram of the total number of steps taken each day
-```{r}
+
+```r
 totals<-aggregate(data$steps, by=list(date=data$date), FUN=sum)
 hist(totals$x,
      xlab="Total steps taken",
      main="Histogram of Total Steps Taken") 
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
 
 ###Calculate and report the mean and median total number of steps taken per day
 Mean
-```{r}
+
+```r
 all_mean<-mean(data[, 1],na.rm=TRUE)
 print(all_mean)
 ```
+
+```
+## [1] 37.3826
+```
 Median
-```{r}
+
+```r
 all_median<-median(data[, 1],na.rm=TRUE)
 print(all_median)
+```
+
+```
+## [1] 0
 ```
 
 
@@ -46,7 +55,8 @@ print(all_median)
 ###Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
-```{r}
+
+```r
 interval_means<-aggregate(data[, 1], list(data$interval), function(x) {mean(x,na.rm=TRUE)})
 names(interval_means)<-c("Interval","int_means")
 plot(interval_means$Interval,interval_means$int_means,type="l",
@@ -55,11 +65,18 @@ plot(interval_means$Interval,interval_means$int_means,type="l",
      main="Daily Activity Pattern")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
 
 ###Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 max_interval<-interval_means[interval_means$int_means==max(interval_means$int_means),1]
 print(max_interval)
+```
+
+```
+## [1] 835
 ```
 
 
@@ -67,8 +84,13 @@ print(max_interval)
 
 
 ###Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
-```{r}
+
+```r
 length(data[is.na(data$steps),1])
+```
+
+```
+## [1] 2304
 ```
 
 
@@ -77,7 +99,8 @@ length(data[is.na(data$steps),1])
 
 ###Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 rm_data<-data
 m<-dim(rm_data)[1]
 
@@ -90,25 +113,38 @@ for (i in 1:m){
 
 
 ###Make a histogram of the total number of steps taken each day
-```{r}
+
+```r
 totals_rm<-aggregate(rm_data$steps, by=list(date=rm_data$date), FUN=sum)
 hist(totals_rm$x,
      xlab="Total steps taken",
      main="Histogram of Total Steps Taken wo/Missing Values") 
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+
 
 ###Calculate and report the mean and median total number of steps taken per day
 
 Mean
-```{r}
+
+```r
 all_mean_rm<-mean(rm_data[, 1],na.rm=TRUE)
 print(all_mean_rm)
 ```
+
+```
+## [1] 37.3826
+```
 Median
-```{r}
+
+```r
 all_median_rm<-median(rm_data[, 1],na.rm=TRUE)
 print(all_median_rm)
+```
+
+```
+## [1] 0
 ```
 
 
@@ -120,15 +156,23 @@ Estimate of the total daily number is unchanges as I'm replacing missing values 
 
 
 ###Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
-```{r}
+
+```r
 rm_data$weekend_flag<-factor(ifelse(weekdays(rm_data$date,abbreviate = TRUE) %in% c("Sun","Sat"),"Weekend","Weekday"))
 ```
 
 ###Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
 
-```{r}
-library(lattice)
 
+```r
+library(lattice)
+```
+
+```
+## Warning: package 'lattice' was built under R version 3.2.2
+```
+
+```r
 weekend_flag_means<-aggregate(rm_data[, 1], list(rm_data$weekend_flag,rm_data$interval), mean)
 names(weekend_flag_means)<-c("weekend_flag","interval","steps")
 
@@ -136,5 +180,7 @@ xyplot(steps~interval|weekend_flag,data=weekend_flag_means,layout=c(1,2),type="l
        ylab="Number of steps",
        xlab="Interval")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
 
 
